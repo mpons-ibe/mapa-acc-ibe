@@ -135,9 +135,7 @@ header{padding:10px 20px;background:#fff;border-bottom:1px solid #e2e8f0;display
   <!-- Panel resumen -->
   <div id="panel">
     <div id="ph"><span>RESUMEN POR ISLA</span><button id="pt">▼</button></div>
-    <div id="pb" style="padding:10px 13px 12px;overflow-y:auto;">
-      <div style="font-size:.72rem;color:#94a3b8;padding:8px 0;">Cargando datos…</div>
-    </div>
+    <div id="pb" style="padding:10px 13px 12px;overflow-y:auto;"></div>
   </div>
 
   <div id="searchwrap">
@@ -412,24 +410,25 @@ function renderData(data) {
 }
 
 async function loadData() {
-  const proxies = [
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-    u => `https://thingproxy.freeboard.io/fetch/${u}`,
-  ];
-  for (const makeProxy of proxies) {
-    try {
-      const url = makeProxy(SHEET_URL);
-      const resp = await fetch(url, { signal: AbortSignal.timeout(7000) });
-      if (!resp.ok) continue;
-      const ct = resp.headers.get('content-type') || '';
-      let text;
-      if (ct.includes('json')) { const j = await resp.json(); text = j.contents || j.data || ''; }
-      else { text = await resp.text(); }
-      if (!text || !text.includes(',')) continue;
-      const parsed = parseCSV(text);
-      if (parsed.length) { renderData(parsed); return; }
-    } catch(e) {}
+  // fetch directo funciona desde https:// sin necesidad de proxy
+  try {
+    const resp = await fetch(SHEET_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const parsed = parseCSV(text);
+    if (parsed.length) { renderData(parsed); return; }
+  } catch(e) {
+    console.warn('Fetch directo fallido, intentando proxy…', e);
+  }
+  // Fallback: proxy corsproxy.io
+  try {
+    const resp = await fetch(`https://corsproxy.io/?${encodeURIComponent(SHEET_URL)}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const parsed = parseCSV(text);
+    if (parsed.length) { renderData(parsed); return; }
+  } catch(e) {
+    console.warn('Proxy también falló:', e);
   }
 }
 
