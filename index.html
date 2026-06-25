@@ -317,20 +317,21 @@ function buildPanel(D) {
   });
 
   const totalAhorro = totalKw && totalCas ? Math.round(totalKw/totalCas*300*totalCas) : null;
-  html += `<hr class="dv">
-  <div class="foot-grid">
+
+  // Totales primero, luego por isla
+  const totalHtml = `<div class="foot-grid" style="margin-bottom:10px;">
     <div class="fc"><div class="fn">${totalInst}</div><div class="fl">instalaciones</div></div>
     <div class="fc"><div class="fn green">${totalKw||'—'}${totalKw?' kW':''}</div><div class="fl">kW totales</div></div>
     <div class="fc"><div class="fn">${totalCas||'—'}</div><div class="fl">viviendas</div></div>
     <div class="fc"><div class="fn">${totalPym||'—'}</div><div class="fl">pymes</div></div>
     <div class="fc" style="grid-column:span 2"><div class="fn purple">${totalAhorro?totalAhorro.toLocaleString('es')+' €':'—'}</div><div class="fl">ahorro est. total/año</div></div>
-  </div>`;
+  </div><hr class="dv">`;
 
-  document.getElementById('pb').innerHTML = html;
+  document.getElementById('pb').innerHTML = totalHtml + html;
 
   // Actualizar cabecera
   document.querySelector('.hd p').textContent =
-    `${totalInst} instalaciones · Illes Balears · Datos: institutbalearenergia.com · Actualizados desde Google Sheets`;
+    `${totalInst} instalaciones · Illes Balears · Datos: institutbalearenergia.com`;
 
   // Leyenda dinámica
   const counts = {};
