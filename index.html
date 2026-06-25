@@ -140,13 +140,6 @@ header{padding:10px 20px;background:#fff;border-bottom:1px solid #e2e8f0;display
     </div>
   </div>
 
-  <!-- Loader -->
-  <div id="loader" style="
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    z-index:2000;background:#fff;padding:16px 24px;border-radius:10px;
-    box-shadow:0 4px 20px rgba(0,0,0,.15);font-size:.85rem;color:#334155;
-    border:1px solid #e2e8f0;display:none;white-space:nowrap;
-  "></div>
   <div id="searchwrap">
     <input id="searchbox" type="text" placeholder="Buscar instalación, municipio o isla…" autocomplete="off">
     <div id="searchresults"></div>
@@ -402,62 +395,8 @@ document.getElementById('pt').addEventListener('click', () => {
   document.getElementById('pt').textContent = col ? '▶' : '▼';
 });
 
-// ── Carga principal desde Google Sheets ─────────────────────────────────────
-function showLoader(msg) {
-  document.getElementById('loader').textContent = msg;
-  document.getElementById('loader').style.display = 'block';
-}
-function hideLoader() {
-  document.getElementById('loader').style.display = 'none';
-}
 
-// ── Datos de respaldo
-const FALLBACK = [
-  {n:"Alaró",i:"Mallorca",s:"marcha",kw:200,cas:100,pym:20,co2:"-123,79",ed:"Aparcamiento Son Tugores + Polideportivo",url:"alaro-2",lat:39.6962,lng:2.7870},
-  {n:"Algaida",i:"Mallorca",s:"marcha",kw:20,cas:13,pym:1,co2:"-12,29",ed:"Sala Polivalent",url:"algaida-2",lat:39.5631,lng:2.9042},
-  {n:"Artà",i:"Mallorca",s:"marcha",kw:94,cas:49,pym:7,co2:"-55,65",ed:"CEIP Pou de sa Lluna i na Caragol",url:"arta-2",lat:39.6986,lng:3.3495},
-  {n:"Campanet",i:"Mallorca",s:"marcha",kw:24,cas:20,pym:0,co2:"-12,87",ed:"Ajuntament + Centre de Dia",url:"campanet-2",lat:39.7583,lng:2.9472},
-  {n:"Capdepera",i:"Mallorca",s:"marcha",kw:10,cas:null,pym:null,co2:null,ed:"VPP C/ Pizarro 44, Cala Rajada",url:"capdepera-2",lat:39.7061,lng:3.4411},
-  {n:"Consell",i:"Mallorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:"Polideportivo municipal",url:"consell-3",lat:39.6633,lng:2.8327},
-  {n:"Esporles",i:"Mallorca",s:"marcha",kw:20,cas:12,pym:2,co2:"-11,79",ed:"Sala Polivalent",url:"esporles-2",lat:39.6550,lng:2.6086},
-  {n:"Es Rafal (Palma)",i:"Mallorca",s:"marcha",kw:70,cas:45,pym:3,co2:"-41,67",ed:"C/ del Plataner 3-5-7-9",url:"es-rafal-2",lat:39.5710,lng:2.6610},
-  {n:"Es Viver (Palma)",i:"Mallorca",s:"marcha",kw:60,cas:40,pym:7,co2:"-39,74",ed:"C/ Crèdit Balear 70",url:"viver-2",lat:39.5730,lng:2.6580},
-  {n:"Foners (Palma)",i:"Mallorca",s:"marcha",kw:66,cas:36,pym:3,co2:"-41,83",ed:"C/ Manuel Azaña 7-9",url:"palma-2",lat:39.5680,lng:2.6540},
-  {n:"La Ribera (Palma)",i:"Mallorca",s:"marcha",kw:20,cas:17,pym:3,co2:"-12,60",ed:"C/ Fotja 2",url:"la-ribera-palma-2",lat:39.5720,lng:2.6560},
-  {n:"Llubí",i:"Mallorca",s:"marcha",kw:68,cas:24,pym:7,co2:"38,15",ed:"Aparcamiento polideportivo",url:"llubi-2",lat:39.6908,lng:3.0064},
-  {n:"Sa Pobla",i:"Mallorca",s:"marcha",kw:160,cas:91,pym:13,co2:"-142,94",ed:"IBAVI C/Capità Pere + C/Mercat + Cementerio",url:"sa-pobla-2",lat:39.7671,lng:3.0182},
-  {n:"Santa Eugènia",i:"Mallorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"santa-eugenia-2",lat:39.6297,lng:2.8492},
-  {n:"Selva",i:"Mallorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"selva-2",lat:39.7503,lng:2.9053},
-  {n:"Ses Salines",i:"Mallorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"ses-salines-2",lat:39.3469,lng:3.0503},
-  {n:"Sineu",i:"Mallorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"sineu-2",lat:39.6422,lng:3.0064},
-  {n:"Alcúdia",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"alcudia-2",lat:39.8530,lng:3.1236},
-  {n:"Andratx",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"andratx-2",lat:39.5753,lng:2.4269},
-  {n:"Bunyola",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"bunyola-2",lat:39.6900,lng:2.6958},
-  {n:"Caimari",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"caimari-2",lat:39.7631,lng:2.9186},
-  {n:"Calvià",i:"Mallorca",s:"construccion",kw:300,cas:112,pym:16,co2:"-170,89",ed:"IES Calvià",url:"calvia-2",lat:39.5647,lng:2.5131},
-  {n:"Es Jonquet (Palma)",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"es-jonquet-palma-2",lat:39.5756,lng:2.6369},
-  {n:"Es Pil·larí (Palma)",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"es-pillari-2",lat:39.5469,lng:2.6753},
-  {n:"Llevant (Palma)",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"llevant-palma-2",lat:39.5794,lng:2.6719},
-  {n:"Llucmajor",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"llucmajor-2",lat:39.4833,lng:2.8883},
-  {n:"Mancor de la Vall",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"mancor-de-la-vall-3",lat:39.7483,lng:2.8897},
-  {n:"Montuïri",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"montuiri-2",lat:39.5703,lng:2.9942},
-  {n:"Porreres",i:"Mallorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"porreres-2",lat:39.5153,lng:3.0172},
-  {n:"CEIP C.J. Cela (Palma)",i:"Mallorca",s:"participacion",kw:null,cas:null,pym:null,co2:null,ed:"CEIP Camilo José Cela",url:"ceip-camilo-jose-cela-palma-2",lat:39.5686,lng:2.6489},
-  {n:"Santa Maria del Camí",i:"Mallorca",s:"participacion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"santa-maria-del-cami-2",lat:39.6436,lng:2.7733},
-  {n:"Palmanyola",i:"Mallorca",s:"proximamente",kw:null,cas:null,pym:null,co2:null,ed:null,url:"palmanyola-2",lat:39.6806,lng:2.7103},
-  {n:"Parc Bit",i:"Mallorca",s:"proximamente",kw:null,cas:null,pym:null,co2:null,ed:null,url:"parc-bit-2",lat:39.6367,lng:2.6444},
-  {n:"Ciutadella",i:"Menorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"ciutadella-2",lat:40.0033,lng:3.8317},
-  {n:"Es Castell",i:"Menorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"es-castell-2",lat:39.8672,lng:4.2683},
-  {n:"Es Mercadal",i:"Menorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"mercadal-2",lat:39.9997,lng:4.0667},
-  {n:"Ferreries",i:"Menorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"ferreries-2",lat:39.9828,lng:4.0092},
-  {n:"Maó",i:"Menorca",s:"construccion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"mao-2",lat:39.8889,lng:4.2644},
-  {n:"Sant Lluís",i:"Menorca",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"sant-lluis-2",lat:39.8469,lng:4.2606},
-  {n:"Sant Antoni de Portmany",i:"Eivissa",s:"marcha",kw:null,cas:null,pym:null,co2:null,ed:null,url:"sant-antoni-de-portmany-2",lat:38.9800,lng:1.3014},
-  {n:"Sant Josep de sa Talaia",i:"Eivissa",s:"participacion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"sant-josep-de-sa-talaia-2",lat:38.9189,lng:1.2906},
-  {n:"Cas Serres (Eivissa)",i:"Eivissa",s:"participacion",kw:null,cas:null,pym:null,co2:null,ed:null,url:"cas-serres-eivissa-2",lat:38.9097,lng:1.4361},
-];
-
-function renderData(data, source) {
+function renderData(data) {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
   D = data;
@@ -470,20 +409,14 @@ function renderData(data, source) {
     return m;
   });
   buildPanel(D);
-  document.querySelector('.hd p').textContent =
-    `${D.length} instalaciones · Illes Balears · ${source}`;
-  hideLoader();
 }
 
 async function loadData() {
-  showLoader('⏳ Cargando datos desde Google Sheets…');
-
   const proxies = [
     u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
     u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
     u => `https://thingproxy.freeboard.io/fetch/${u}`,
   ];
-
   for (const makeProxy of proxies) {
     try {
       const url = makeProxy(SHEET_URL);
@@ -491,23 +424,13 @@ async function loadData() {
       if (!resp.ok) continue;
       const ct = resp.headers.get('content-type') || '';
       let text;
-      if (ct.includes('json')) {
-        const j = await resp.json();
-        text = j.contents || j.data || '';
-      } else {
-        text = await resp.text();
-      }
+      if (ct.includes('json')) { const j = await resp.json(); text = j.contents || j.data || ''; }
+      else { text = await resp.text(); }
       if (!text || !text.includes(',')) continue;
       const parsed = parseCSV(text);
-      if (parsed.length) {
-        renderData(parsed, 'Datos en directo desde Google Sheets ✓');
-        return;
-      }
-    } catch(e) { /* prueba siguiente proxy */ }
+      if (parsed.length) { renderData(parsed); return; }
+    } catch(e) {}
   }
-
-  // Ningún proxy funcionó → usar datos de respaldo sin mostrar error
-  renderData(FALLBACK, 'Datos locales (Google Sheets no accesible desde file://)');
 }
 
 initSearch();
