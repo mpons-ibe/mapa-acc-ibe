@@ -118,7 +118,6 @@ header{padding:10px 20px;background:#fff;border-bottom:1px solid #e2e8f0;display
 <body>
 <header>
   <div class="hd">
-    <h1>Autoconsumo Compartido — Institut Balear de l'Energia</h1>
     <p>43 instalaciones · Illes Balears · Datos: institutbalearenergia.com</p>
   </div>
   <div class="legend">
@@ -134,7 +133,7 @@ header{padding:10px 20px;background:#fff;border-bottom:1px solid #e2e8f0;display
 
   <!-- Panel resumen -->
   <div id="panel">
-    <div id="ph"><span>RESUMEN POR ISLA</span><button id="pt">▼</button></div>
+    <div id="ph"><span>RESUMEN</span><button id="pt">▼</button></div>
     <div id="pb" style="padding:10px 13px 12px;overflow-y:auto;"></div>
   </div>
 
@@ -319,7 +318,8 @@ function buildPanel(D) {
   const totalAhorro = totalKw && totalCas ? Math.round(totalKw/totalCas*300*totalCas) : null;
 
   // Totales primero, luego por isla
-  const totalHtml = `<div class="foot-grid" style="margin-bottom:10px;">
+  const totalHtml = `<div class="isla-title" style="margin-bottom:6px;">Illes Balears</div>
+  <div class="foot-grid" style="margin-bottom:10px;">
     <div class="fc"><div class="fn">${totalInst}</div><div class="fl">instalaciones</div></div>
     <div class="fc"><div class="fn green">${totalKw||'—'}${totalKw?' kW':''}</div><div class="fl">kW totales</div></div>
     <div class="fc"><div class="fn">${totalCas||'—'}</div><div class="fl">viviendas</div></div>
