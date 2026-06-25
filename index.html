@@ -278,7 +278,7 @@ function buildPopup(d) {
     : `<div class="row"><span class="lbl">Potencia</span><span class="val nd">—</span></div>`;
   if (d.cas != null) rows += `<div class="row"><span class="lbl">Benefic.</span><span class="val">${d.cas} casas${d.pym ? ' + '+d.pym+' pymes' : ''}</span></div>`;
   if (d.co2) rows += `<div class="row"><span class="lbl">CO₂ evitado</span><span class="co2">${d.co2} t/año</span></div>`;
-  if (d.kw && d.cas) rows += `<div class="row"><span class="lbl">Ahorro est.</span><span class="val">~${Math.round(d.kw/d.cas*300)} €/año/part.</span></div>`;
+  if (d.kw) rows += `<div class="row"><span class="lbl">Ahorro est.</span><span class="val">~${Math.round(300*d.kw).toLocaleString('es')} €/año</span></div>`;
   return `<div class="pop-inner">
     <div class="pn">${d.n}</div><div class="pi">${d.i}</div>
     <span class="ps ${scls}">${label}</span>
@@ -313,7 +313,7 @@ function buildPanel(D) {
     const cas = sub.reduce((a,d)=>a+(d.cas||0),0);
     const pym = sub.reduce((a,d)=>a+(d.pym||0),0);
     totalKw+=kw; totalCas+=cas; totalPym+=pym;
-    const ahorro = kw && cas ? Math.round(kw/cas*300*cas) : null;
+    const ahorro = kw ? Math.round(300 * kw) : null;
 
     const maxCount = Math.max(...estados.map(s=>sub.filter(d=>d.s===s).length), 1);
     const bars = estados.map(s=>{
@@ -339,7 +339,7 @@ function buildPanel(D) {
     </div>`;
   });
 
-  const totalAhorro = totalKw && totalCas ? Math.round(totalKw/totalCas*300*totalCas) : null;
+  const totalAhorro = totalKw ? Math.round(300 * totalKw) : null;
 
   // Totales primero, luego por isla
   const totalHtml = `<div class="isla-title" style="margin-bottom:6px;">Illes Balears</div>
