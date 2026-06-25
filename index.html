@@ -113,6 +113,30 @@ header{padding:10px 20px;background:#fff;border-bottom:1px solid #e2e8f0;display
   background:#eff6ff;border:1px solid #bfdbfe;
   font-size:.68rem;font-weight:600;color:#1d4ed8;
 }
+
+/* ── Móvil ── */
+@media(max-width:768px){
+  header{padding:7px 12px;gap:6px;}
+  .hd p{font-size:.63rem;}
+  .legend{gap:8px;margin-left:0;}
+  .li{font-size:.63rem;}
+  #map{height:calc(100vh - 68px);}
+
+  /* Panel: franja horizontal abajo */
+  #panel{
+    position:absolute;
+    top:auto;bottom:0;left:0;right:0;
+    width:100%;border-radius:10px 10px 0 0;
+    max-height:38vh;
+    flex-direction:column;
+  }
+  #pb{max-height:calc(38vh - 36px);}
+
+  /* Buscador: ancho completo arriba */
+  #searchwrap{
+    top:8px;left:8px;right:8px;width:auto;
+  }
+}
 </style>
 </head>
 <body>
